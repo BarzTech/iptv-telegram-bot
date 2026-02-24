@@ -411,29 +411,39 @@ async def generate_user_file(update: Update, context: ContextTypes.DEFAULT_TYPE)
 # ============================================
 # MAIN FUNCTION
 # ============================================
+# ============================================
+# MAIN FUNCTION - FIXED VERSION
+# ============================================
 def main():
-    """Start the bot"""
+    """Start the bot with proper error handling"""
     print("\n🚀 Starting bot main function...")
     
-    # Create application
-    app = Application.builder().token(BOT_TOKEN).build()
-    
-    # Add all handlers
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("help", help_command))
-    app.add_handler(CommandHandler("status", status))
-    app.add_handler(CommandHandler("add", add_channel))
-    app.add_handler(CommandHandler("remove", remove_channel))
-    app.add_handler(CommandHandler("list", list_channels))
-    app.add_handler(CommandHandler("vodlist", vod_list))
-    app.add_handler(CommandHandler("generate", generate_user_file))
-    app.add_handler(MessageHandler(filters.VIDEO, handle_video))
-    
-    print("✅ Bot configured, starting polling...")
-    print("="*60)
-    
-    # Start bot (this runs until the workflow stops it)
-    app.run_polling()
+    try:
+        # Create application
+        app = Application.builder().token(BOT_TOKEN).build()
+        
+        # Add all handlers
+        app.add_handler(CommandHandler("start", start))
+        app.add_handler(CommandHandler("help", help_command))
+        app.add_handler(CommandHandler("status", status))
+        app.add_handler(CommandHandler("add", add_channel))
+        app.add_handler(CommandHandler("remove", remove_channel))
+        app.add_handler(CommandHandler("list", list_channels))
+        app.add_handler(CommandHandler("vodlist", vod_list))
+        app.add_handler(CommandHandler("generate", generate_user_file))
+        app.add_handler(MessageHandler(filters.VIDEO, handle_video))
+        
+        print("✅ Bot configured, starting polling...")
+        print("="*60)
+        print("Bot is running! Send commands on Telegram.")
+        print("="*60)
+        
+        # Start bot - this will run until the workflow stops it
+        app.run_polling()
+        
+    except Exception as e:
+        print(f"❌ Bot error: {e}")
+        # Don't exit - let GitHub Actions handle it
 
 if __name__ == "__main__":
     main()
