@@ -2,7 +2,7 @@ name: IPTV Bot
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '*/15 * * * *'  # Every 15 minutes
   workflow_dispatch:
 
 jobs:
@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -21,23 +23,47 @@ jobs:
     - name: Install dependencies
       run: pip install python-telegram-bot==20.7
     
+    - name: Show files BEFORE bot runs
+      run: |
+        echo "📁 FILES BEFORE:"
+        ls -la
+        echo ""
+        echo "📄 channels.json content:"
+        cat channels.json 2>/dev/null || echo "No channels.json"
+    
     - name: Run Bot
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         ADMIN_IDS: ${{ secrets.ADMIN_IDS }}
       run: python bot.py
     
-    - name: SAVE DATA (FORCE PUSH)
+    - name: Show files AFTER bot runs
+      run: |
+        echo "📁 FILES AFTER:"
+        ls -la
+        echo ""
+        echo "📄 channels.json content:"
+        cat channels.json 2>/dev/null || echo "No channels.json"
+    
+    - name: FORCE SAVE EVERYTHING
       run: |
         # Configure git
         git config --global user.name "GitHub Bot"
         git config --global user.email "bot@github.com"
         
-        # Force add ALL files (including json)
+        # Show git status
+        echo "🔍 GIT STATUS:"
+        git status
+        
+        # Force add everything
         git add -f channels.json vod.json
+        git add -f .
         
-        # Commit if there are changes
-        git diff --staged --quiet || git commit -m "Update data"
+        # Commit if anything changed
+        git diff --staged --quiet || git commit -m "Save data $(date)"
         
-        # Force push to overwrite everything
+        # FORCE PUSH (this overwrites everything)
+        echo "🚀 PUSHING TO GITHUB..."
         git push origin main --force
+        
+        echo "✅ DONE"
