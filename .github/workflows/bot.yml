@@ -2,15 +2,20 @@ name: IPTV Bot
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # Every 15 minutes
+    - cron: '*/30 * * * *'
   workflow_dispatch:
+
+# CRITICAL: This ensures only ONE run happens at a time
+concurrency:
+  group: iptv-bot-group
+  cancel-in-progress: true
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
+    - name: Checkout
       uses: actions/checkout@v3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -20,50 +25,29 @@ jobs:
       with:
         python-version: '3.11'
     
-    - name: Install dependencies
+    - name: Install
       run: pip install python-telegram-bot==20.7
     
-    - name: Show files BEFORE bot runs
+    - name: Wait for previous runs to finish
       run: |
-        echo "📁 FILES BEFORE:"
-        ls -la
-        echo ""
-        echo "📄 channels.json content:"
-        cat channels.json 2>/dev/null || echo "No channels.json"
+        echo "⏳ Checking for other running instances..."
+        sleep 5
     
     - name: Run Bot
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         ADMIN_IDS: ${{ secrets.ADMIN_IDS }}
-      run: python bot.py
-    
-    - name: Show files AFTER bot runs
       run: |
-        echo "📁 FILES AFTER:"
-        ls -la
-        echo ""
-        echo "📄 channels.json content:"
-        cat channels.json 2>/dev/null || echo "No channels.json"
+        echo "🚀 Starting bot..."
+        python bot.py
     
-    - name: FORCE SAVE EVERYTHING
+    - name: Force Save Data
+      if: always()
       run: |
-        # Configure git
         git config --global user.name "GitHub Bot"
         git config --global user.email "bot@github.com"
-        
-        # Show git status
-        echo "🔍 GIT STATUS:"
-        git status
-        
-        # Force add everything
         git add -f channels.json vod.json
-        git add -f .
-        
-        # Commit if anything changed
         git diff --staged --quiet || git commit -m "Save data $(date)"
-        
-        # FORCE PUSH (this overwrites everything)
-        echo "🚀 PUSHING TO GITHUB..."
-        git push origin main --force
-        
-        echo "✅ DONE"
+        git pull --rebase origin main
+        git push
+        echo "✅ Data saved"
