@@ -29,8 +29,6 @@ jobs:
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         ADMIN_IDS: ${{ secrets.ADMIN_IDS }}
-        MEDIAFLOW_URL: ${{ secrets.MEDIAFLOW_URL }}
-        MEDIAFLOW_PASS: ${{ secrets.MEDIAFLOW_PASS }}
       run: python bot.py
     
     - name: Save Data
