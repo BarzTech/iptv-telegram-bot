@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-IPTV Telegram Bot - EXTREME DEBUG VERSION
+IPTV Telegram Bot - STABLE PRODUCTION VERSION
+No debug messages, just works!
 """
 
 import os
@@ -10,10 +11,6 @@ import logging
 from datetime import datetime, timedelta
 
 # ===== READ ENVIRONMENT VARIABLES =====
-print("="*60)
-print("IPTV BOT STARTING - EXTREME DEBUG MODE")
-print("="*60)
-
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 if not BOT_TOKEN:
     print("❌ ERROR: BOT_TOKEN not set!")
@@ -26,95 +23,41 @@ if ADMIN_IDS_STR:
         if id_str.strip():
             ADMIN_IDS.append(int(id_str.strip()))
 
-print(f"✅ Bot token: {BOT_TOKEN[:10]}...")
-print(f"✅ Admin IDs: {ADMIN_IDS}")
-
 # ===== IMPORTS =====
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
-# ===== EXTREME DEBUG DATA FUNCTIONS =====
+# ===== DATA STORAGE =====
 CHANNELS_FILE = "channels.json"
 VOD_FILE = "vod.json"
 
-def debug_file_status():
-    """Print detailed file status"""
-    import os
-    print("\n📁 FILE STATUS:")
-    print(f"Current directory: {os.getcwd()}")
-    
-    # Check channels.json
-    if os.path.exists(CHANNELS_FILE):
-        size = os.path.getsize(CHANNELS_FILE)
-        print(f"✅ channels.json exists - Size: {size} bytes")
-        try:
-            with open(CHANNELS_FILE, 'r') as f:
-                content = f.read()
-                print(f"Content: {content[:200]}")  # First 200 chars
-                data = json.loads(content)
-                print(f"Parsed: {len(data)} channels")
-        except Exception as e:
-            print(f"❌ Error reading channels.json: {e}")
-    else:
-        print(f"❌ channels.json DOES NOT EXIST")
-    
-    # Check vod.json
-    if os.path.exists(VOD_FILE):
-        size = os.path.getsize(VOD_FILE)
-        print(f"✅ vod.json exists - Size: {size} bytes")
-    else:
-        print(f"❌ vod.json DOES NOT EXIST")
-    print("-"*40)
-
 def load_channels():
-    """Load channels with extreme debugging"""
-    print("\n📤 LOADING CHANNELS...")
-    debug_file_status()
-    
     try:
         if os.path.exists(CHANNELS_FILE):
             with open(CHANNELS_FILE, 'r') as f:
-                data = json.load(f)
-                print(f"✅ Loaded {len(data)} channels from file")
-                return data
-        else:
-            print("ℹ️ No channels file yet, creating empty list")
-            return []
-    except Exception as e:
-        print(f"❌ Error loading channels: {e}")
-        return []
+                return json.load(f)
+    except:
+        pass
+    return []
 
 def save_channels(channels):
-    """Save channels with extreme debugging"""
-    print("\n📥 SAVING CHANNELS...")
-    print(f"Channels to save: {len(channels)}")
-    
     try:
-        # Write to file
         with open(CHANNELS_FILE, 'w') as f:
             json.dump(channels, f, indent=2)
-        print(f"✅ Wrote to {CHANNELS_FILE}")
-        
-        # Verify immediately after write
-        debug_file_status()
-        
         return True
-    except Exception as e:
-        print(f"❌ Error saving channels: {e}")
+    except:
         return False
 
 def load_vod():
-    """Load VOD items"""
     try:
         if os.path.exists(VOD_FILE):
             with open(VOD_FILE, 'r') as f:
                 return json.load(f)
-        return []
     except:
-        return []
+        pass
+    return []
 
 def save_vod(vod_items):
-    """Save VOD items"""
     try:
         with open(VOD_FILE, 'w') as f:
             json.dump(vod_items, f, indent=2)
@@ -125,32 +68,15 @@ def save_vod(vod_items):
 # ===== TELEGRAM HANDLERS =====
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "🎬 IPTV Bot - Debug Mode\n\n"
+        "🎬 **IPTV Bot - Running**\n\n"
         "Commands:\n"
         "/add NAME URL - Add channel\n"
         "/list - List channels\n"
-        "/debug - Show file status"
+        "/remove NAME - Remove channel\n"
+        "/vodlist - List VODs\n"
+        "/generate USERNAME DAYS - Create user file",
+        parse_mode='Markdown'
     )
-
-async def debug(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Debug command to check files"""
-    import os
-    
-    msg = "🔍 **DEBUG INFO**\n\n"
-    
-    # Check channels.json
-    if os.path.exists("channels.json"):
-        with open("channels.json", 'r') as f:
-            data = json.load(f)
-        msg += f"✅ channels.json: {len(data)} channels\n"
-    else:
-        msg += "❌ channels.json: NOT FOUND\n"
-    
-    # Check current directory
-    msg += f"\n📁 Directory: {os.getcwd()}\n"
-    msg += f"📄 Files: {', '.join(os.listdir('.')[:5])}"
-    
-    await update.message.reply_text(msg, parse_mode='Markdown')
 
 async def add_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id not in ADMIN_IDS:
@@ -164,11 +90,14 @@ async def add_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name = context.args[0]
     url = context.args[1]
     
-    # Load current channels
     channels = load_channels()
-    print(f"Current channels before add: {len(channels)}")
     
-    # Add new channel
+    # Check if exists
+    for ch in channels:
+        if ch['name'].lower() == name.lower():
+            await update.message.reply_text(f"❌ Channel '{name}' exists")
+            return
+    
     channels.append({
         "name": name,
         "url": url,
@@ -176,14 +105,10 @@ async def add_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "added": datetime.now().isoformat()
     })
     
-    # Save
     if save_channels(channels):
         await update.message.reply_text(f"✅ Added: {name}")
-        # Force another load to verify
-        verify = load_channels()
-        await update.message.reply_text(f"✅ Verification: {len(verify)} channels in file")
     else:
-        await update.message.reply_text("❌ Save failed!")
+        await update.message.reply_text("❌ Save failed")
 
 async def list_channels(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id not in ADMIN_IDS:
@@ -193,33 +118,116 @@ async def list_channels(update: Update, context: ContextTypes.DEFAULT_TYPE):
     channels = load_channels()
     
     if not channels:
-        await update.message.reply_text("📭 No channels yet.")
+        await update.message.reply_text("📭 No channels yet")
         return
     
-    msg = "📺 Your Channels:\n"
+    msg = "📺 **Your Channels:**\n"
     for ch in channels:
-        msg += f"\n• {ch['name']} ({ch.get('group', 'General')})"
-    msg += f"\n\nTotal: {len(channels)} channels"
+        msg += f"\n• {ch['name']}"
+    msg += f"\n\nTotal: {len(channels)}"
     
-    await update.message.reply_text(msg)
+    await update.message.reply_text(msg, parse_mode='Markdown')
+
+async def remove_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id not in ADMIN_IDS:
+        await update.message.reply_text("⛔ Unauthorized")
+        return
+    
+    if not context.args:
+        await update.message.reply_text("Usage: /remove NAME")
+        return
+    
+    name = context.args[0]
+    channels = load_channels()
+    new_channels = [ch for ch in channels if ch['name'].lower() != name.lower()]
+    
+    if len(new_channels) == len(channels):
+        await update.message.reply_text(f"❌ Channel '{name}' not found")
+        return
+    
+    if save_channels(new_channels):
+        await update.message.reply_text(f"✅ Removed: {name}")
+
+async def handle_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id not in ADMIN_IDS:
+        return
+    
+    video = update.message.video
+    if not video:
+        return
+    
+    title = update.message.caption or video.file_name or f"Video_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    
+    vod_items = load_vod()
+    vod_items.append({
+        "file_id": video.file_id,
+        "title": title,
+        "added": datetime.now().isoformat()
+    })
+    
+    if save_vod(vod_items):
+        await update.message.reply_text(f"✅ Added VOD: {title}")
+
+async def vod_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id not in ADMIN_IDS:
+        await update.message.reply_text("⛔ Unauthorized")
+        return
+    
+    vod_items = load_vod()
+    
+    if not vod_items:
+        await update.message.reply_text("📭 No VOD items")
+        return
+    
+    msg = "🎥 **Your VOD Library:**\n"
+    for i, vod in enumerate(vod_items[-10:], 1):
+        msg += f"\n{i}. {vod['title']}"
+    
+    await update.message.reply_text(msg, parse_mode='Markdown')
+
+async def generate_user_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id not in ADMIN_IDS:
+        await update.message.reply_text("⛔ Unauthorized")
+        return
+    
+    if len(context.args) < 2:
+        await update.message.reply_text("Usage: /generate USERNAME DAYS")
+        return
+    
+    username = context.args[0]
+    days = int(context.args[1])
+    expiry = datetime.now() + timedelta(days=days)
+    
+    channels = load_channels()
+    
+    m3u = f"""#EXTM3U
+# IPTV for: {username}
+# Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+# Expires: {expiry.strftime('%Y-%m-%d')}
+"""
+    for ch in channels:
+        m3u += f"\n#EXTINF:-1,{ch['name']}\n{ch['url']}\n"
+    
+    await update.message.reply_document(
+        document=m3u.encode('utf-8'),
+        filename=f"{username}_iptv.m3u",
+        caption=f"✅ Generated\nExpires: {expiry.strftime('%Y-%m-%d')}"
+    )
 
 # ===== MAIN =====
 def main():
-    print("\n" + "="*60)
-    print("STARTING BOT - INITIAL FILE CHECK")
-    print("="*60)
-    debug_file_status()
-    
+    print("🚀 Starting IPTV Bot...")
     app = Application.builder().token(BOT_TOKEN).build()
     
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("debug", debug))
     app.add_handler(CommandHandler("add", add_channel))
     app.add_handler(CommandHandler("list", list_channels))
+    app.add_handler(CommandHandler("remove", remove_channel))
+    app.add_handler(CommandHandler("vodlist", vod_list))
+    app.add_handler(CommandHandler("generate", generate_user_file))
+    app.add_handler(MessageHandler(filters.VIDEO, handle_video))
     
-    print("\n✅ Bot configured, starting polling...")
-    print("="*60)
-    
+    print("✅ Bot is running!")
     app.run_polling()
 
 if __name__ == "__main__":
