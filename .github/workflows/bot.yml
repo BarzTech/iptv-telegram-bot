@@ -2,21 +2,25 @@ name: IPTV Bot Runner
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Run every hour
-  workflow_dispatch:      # Allow manual trigger
+    - cron: '0 * * * *'
+  workflow_dispatch:
   push:
     branches: [ main ]
 
 jobs:
   run-iptv-bot:
     runs-on: ubuntu-latest
-    timeout-minutes: 55
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+    
+    - name: Download previous data
+      uses: actions/download-artifact@v4
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        name: iptv-data
+        path: ./
+      continue-on-error: true  # This is KEY - won't fail on first run
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -25,7 +29,6 @@ jobs:
     
     - name: Install dependencies
       run: |
-        pip install --upgrade pip
         pip install -r requirements.txt
     
     - name: Run Telegram Bot
@@ -35,23 +38,14 @@ jobs:
         MEDIAFLOW_PASS: ${{ secrets.MEDIAFLOW_PASS }}
         ADMIN_IDS: ${{ secrets.ADMIN_IDS }}
       run: |
-        echo "🚀 Starting IPTV Bot..."
         python bot.py
     
-    - name: Save data back to repository
-      run: |
-        # Configure git
-        git config --global user.name "GitHub Actions Bot"
-        git config --global user.email "actions@github.com"
-        
-        # Check if files have changed
-        git add channels.json vod.json 2>/dev/null || true
-        
-        # Only commit if there are changes
-        if ! git diff --quiet && ! git diff --staged --quiet; then
-          git commit -m "Update channel and VOD data [skip ci]"
-          git push
-          echo "✅ Data saved to repository"
-        else
-          echo "ℹ️ No changes to save"
-        fi
+    - name: Upload data as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: iptv-data
+        path: |
+          channels.json
+          vod.json
+        retention-days: 90  # Keeps data for 90 days [citation:3]
+        if-no-files-found: ignore
