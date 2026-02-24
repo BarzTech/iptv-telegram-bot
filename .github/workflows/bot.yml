@@ -1,51 +1,39 @@
-name: IPTV Bot Runner
+name: IPTV Bot
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '*/30 * * * *'  # Run every 30 minutes
   workflow_dispatch:
-  push:
-    branches: [ main ]
 
 jobs:
-  run-iptv-bot:
+  run-bot:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout repository
+    - name: Checkout
       uses: actions/checkout@v3
     
-    - name: Download previous data
-      uses: actions/download-artifact@v4
-      with:
-        name: iptv-data
-        path: ./
-      continue-on-error: true  # This is KEY - won't fail on first run
-    
-    - name: Set up Python
+    - name: Python Setup
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
     
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
+    - name: Install
+      run: pip install python-telegram-bot==20.7
     
-    - name: Run Telegram Bot
+    - name: Run Bot
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        ADMIN_IDS: ${{ secrets.ADMIN_IDS }}
         MEDIAFLOW_URL: ${{ secrets.MEDIAFLOW_URL }}
         MEDIAFLOW_PASS: ${{ secrets.MEDIAFLOW_PASS }}
-        ADMIN_IDS: ${{ secrets.ADMIN_IDS }}
-      run: |
-        python bot.py
+      run: python bot.py
     
-    - name: Upload data as artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: iptv-data
-        path: |
-          channels.json
-          vod.json
-        retention-days: 90  # Keeps data for 90 days [citation:3]
-        if-no-files-found: ignore
+    - name: Force Save ALL Files
+      run: |
+        git config --global user.name "bot"
+        git config --global user.email "bot@github.com"
+        git add -A --force
+        git commit -m "Auto-save $(date)" || exit 0
+        git pull --rebase origin main
+        git push
