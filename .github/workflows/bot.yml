@@ -1,25 +1,22 @@
 name: IPTV Bot Runner
 
 on:
-  # Run every hour
   schedule:
-    - cron: '0 * * * *'
-  
-  # Allow manual trigger
-  workflow_dispatch:
-  
-  # Run on code changes
+    - cron: '0 * * * *'  # Run every hour
+  workflow_dispatch:      # Allow manual trigger
   push:
     branches: [ main ]
 
 jobs:
   run-iptv-bot:
     runs-on: ubuntu-latest
-    timeout-minutes: 55  # Run for 55 minutes each hour
+    timeout-minutes: 55
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -41,14 +38,16 @@ jobs:
         echo "🚀 Starting IPTV Bot..."
         python bot.py
     
-    - name: Save data to repository
+    - name: Save data back to repository
       run: |
+        # Configure git
         git config --global user.name "GitHub Actions Bot"
         git config --global user.email "actions@github.com"
         
-        # Check if files changed
+        # Check if files have changed
         git add channels.json vod.json 2>/dev/null || true
         
+        # Only commit if there are changes
         if ! git diff --quiet && ! git diff --staged --quiet; then
           git commit -m "Update channel and VOD data [skip ci]"
           git push
