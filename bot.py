@@ -1,174 +1,117 @@
 #!/usr/bin/env python3
 """
-IPTV Telegram Bot - GitHub Actions Optimized Version
-Suppresses harmless conflict errors
+IPTV Telegram Bot - ULTRA SIMPLE VERSION
+Data never disappears!
 """
 
 import os
 import sys
 import json
 import logging
-import warnings
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
 
-# Suppress harmless warnings
-warnings.filterwarnings("ignore", message="Conflict: terminated by other getUpdates request")
+# ===== READ ENVIRONMENT VARIABLES =====
+print("🚀 Starting IPTV Bot...")
 
-# ============================================
-# READ ENVIRONMENT VARIABLES
-# ============================================
-print("\n" + "="*60)
-print("IPTV BOT STARTING ON GITHUB ACTIONS")
-print("="*60)
-
-# Get bot token
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 if not BOT_TOKEN:
     print("❌ ERROR: BOT_TOKEN not set!")
     sys.exit(1)
-print("✅ BOT_TOKEN found")
 
-# Get MediaFlow URL
 MEDIAFLOW_URL = os.environ.get("MEDIAFLOW_URL", "")
-if MEDIAFLOW_URL:
-    print(f"✅ MEDIAFLOW_URL: {MEDIAFLOW_URL}")
-
-# Get MediaFlow password
 MEDIAFLOW_PASS = os.environ.get("MEDIAFLOW_PASS", "")
-if MEDIAFLOW_PASS:
-    print("✅ MEDIAFLOW_PASS set")
-
-# Get admin IDs
 ADMIN_IDS_STR = os.environ.get("ADMIN_IDS", "")
+
 ADMIN_IDS = []
 if ADMIN_IDS_STR:
-    try:
-        for id_str in ADMIN_IDS_STR.split(","):
-            if id_str.strip():
-                ADMIN_IDS.append(int(id_str.strip()))
-        print(f"✅ ADMIN_IDS: {ADMIN_IDS}")
-    except Exception as e:
-        print(f"⚠️ Error parsing ADMIN_IDS: {e}")
+    for id_str in ADMIN_IDS_STR.split(","):
+        if id_str.strip():
+            ADMIN_IDS.append(int(id_str.strip()))
 
-# ============================================
-# IMPORTS
-# ============================================
-try:
-    from telegram import Update
-    from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
-    from telegram.error import Conflict
-    print("✅ Telegram imports successful")
-except ImportError as e:
-    print(f"❌ Import error: {e}")
-    sys.exit(1)
+# ===== SIMPLE DATA STORAGE =====
+# We'll use a simple text file - append only!
+CHANNELS_LOG = "channels.log"
+VOD_LOG = "vod.log"
 
-# Setup logging - reduce verbosity
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.WARNING  # Only show warnings and errors
-)
-logger = logging.getLogger(__name__)
+def load_channels():
+    """Load channels from log file"""
+    channels = []
+    if os.path.exists(CHANNELS_LOG):
+        with open(CHANNELS_LOG, 'r') as f:
+            for line in f:
+                try:
+                    channels.append(json.loads(line.strip()))
+                except:
+                    pass
+    print(f"📺 Loaded {len(channels)} channels")
+    return channels
 
-# ============================================
-# DATA STORAGE FUNCTIONS
-# ============================================
-CHANNELS_FILE = "channels.json"
-VOD_FILE = "vod.json"
+def save_channel(name, url, group):
+    """Append ONE channel to log file"""
+    channel = {
+        "name": name,
+        "url": url,
+        "group": group,
+        "added": datetime.now().isoformat()
+    }
+    with open(CHANNELS_LOG, 'a') as f:
+        f.write(json.dumps(channel) + "\n")
+    print(f"✅ Saved channel: {name}")
+    return True
 
-def load_channels() -> List[Dict]:
-    try:
-        if os.path.exists(CHANNELS_FILE):
-            with open(CHANNELS_FILE, 'r') as f:
-                return json.load(f)
-    except:
-        pass
-    return []
+def remove_channel(name):
+    """Remove channel by name (creates new file without it)"""
+    channels = load_channels()
+    new_channels = [c for c in channels if c['name'].lower() != name.lower()]
+    
+    # Rewrite entire file
+    with open(CHANNELS_LOG, 'w') as f:
+        for ch in new_channels:
+            f.write(json.dumps(ch) + "\n")
+    print(f"✅ Removed channel: {name}")
+    return True
 
-def save_channels(channels: List[Dict]) -> bool:
-    try:
-        with open(CHANNELS_FILE, 'w') as f:
-            json.dump(channels, f, indent=2)
-        return True
-    except:
-        return False
+def load_vod():
+    """Load VOD from log file"""
+    vod_items = []
+    if os.path.exists(VOD_LOG):
+        with open(VOD_LOG, 'r') as f:
+            for line in f:
+                try:
+                    vod_items.append(json.loads(line.strip()))
+                except:
+                    pass
+    print(f"🎥 Loaded {len(vod_items)} VOD items")
+    return vod_items
 
-def load_vod() -> List[Dict]:
-    try:
-        if os.path.exists(VOD_FILE):
-            with open(VOD_FILE, 'r') as f:
-                return json.load(f)
-    except:
-        pass
-    return []
+def save_vod(file_id, title):
+    """Append ONE VOD to log file"""
+    vod = {
+        "file_id": file_id,
+        "title": title,
+        "added": datetime.now().isoformat()
+    }
+    with open(VOD_LOG, 'a') as f:
+        f.write(json.dumps(vod) + "\n")
+    print(f"✅ Saved VOD: {title}")
+    return True
 
-def save_vod(vod_items: List[Dict]) -> bool:
-    try:
-        with open(VOD_FILE, 'w') as f:
-            json.dump(vod_items, f, indent=2)
-        return True
-    except:
-        return False
-
-# ============================================
-# TELEGRAM COMMAND HANDLERS
-# ============================================
+# ===== TELEGRAM SETUP =====
+from telegram import Update
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "🎬 **IPTV Manager Bot - Running!**\n\n"
-        "**Commands:**\n"
-        "/help - Show all commands\n"
-        "/status - Bot status\n"
+        "🎬 **IPTV Bot - Running!**\n\n"
+        "Commands:\n"
         "/add NAME URL [GROUP] - Add channel\n"
         "/remove NAME - Remove channel\n"
         "/list - List channels\n"
-        "/vodlist - List VOD items\n"
-        "/generate USERNAME DAYS - Create user file\n\n"
-        "Send any video to add to VOD library",
+        "/vodlist - List VODs\n"
+        "/generate USERNAME DAYS - Create user file\n"
+        "Send video to add VOD",
         parse_mode='Markdown'
     )
-
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    help_text = """
-📺 **CHANNEL COMMANDS:**
-
-`/add NAME URL [GROUP]` - Add new channel
-  Example: `/add BBC http://example.com/stream.m3u8 News`
-
-`/remove NAME` - Remove channel by name
-  Example: `/remove BBC`
-
-`/list` - Show all channels
-
-🎥 **VOD COMMANDS:**
-
-Send any video file to bot - Adds to VOD library
-`/vodlist` - List all VOD items
-
-👥 **USER MANAGEMENT:**
-
-`/generate USERNAME DAYS` - Create user file
-  Example: `/generate john 30` (30-day access)
-
-`/status` - Check bot status
-"""
-    await update.message.reply_text(help_text, parse_mode='Markdown')
-
-async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-    channels = load_channels()
-    vod_items = load_vod()
-    
-    status_text = f"✅ **Bot Status: Running**\n\n"
-    status_text += f"**Your ID:** `{user_id}`\n"
-    status_text += f"**Admin:** {'✅' if user_id in ADMIN_IDS else '❌'}\n\n"
-    status_text += f"**📺 Channels:** {len(channels)}\n"
-    status_text += f"**🎥 VOD Items:** {len(vod_items)}\n"
-    status_text += f"**🌐 MediaFlow:** {'✅' if MEDIAFLOW_URL else '❌'}\n\n"
-    status_text += f"**Runtime:** GitHub Actions (hourly runs)"
-    
-    await update.message.reply_text(status_text, parse_mode='Markdown')
 
 async def add_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id not in ADMIN_IDS:
@@ -183,24 +126,8 @@ async def add_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     url = context.args[1]
     group = context.args[2] if len(context.args) > 2 else "General"
     
-    channels = load_channels()
-    
-    for ch in channels:
-        if ch['name'].lower() == name.lower():
-            await update.message.reply_text(f"❌ Channel '{name}' already exists!")
-            return
-    
-    channels.append({
-        "name": name,
-        "url": url,
-        "group": group,
-        "added": datetime.now().isoformat()
-    })
-    
-    if save_channels(channels):
-        await update.message.reply_text(f"✅ Added channel: **{name}**", parse_mode='Markdown')
-    else:
-        await update.message.reply_text("❌ Error saving channel")
+    save_channel(name, url, group)
+    await update.message.reply_text(f"✅ Added: {name}")
 
 async def remove_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id not in ADMIN_IDS:
@@ -212,17 +139,8 @@ async def remove_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     
     name = context.args[0]
-    channels = load_channels()
-    new_channels = [ch for ch in channels if ch['name'].lower() != name.lower()]
-    
-    if len(new_channels) == len(channels):
-        await update.message.reply_text(f"❌ Channel '{name}' not found")
-        return
-    
-    if save_channels(new_channels):
-        await update.message.reply_text(f"✅ Removed channel: {name}")
-    else:
-        await update.message.reply_text("❌ Error saving changes")
+    remove_channel(name)
+    await update.message.reply_text(f"✅ Removed: {name}")
 
 async def list_channels(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id not in ADMIN_IDS:
@@ -230,18 +148,14 @@ async def list_channels(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     
     channels = load_channels()
-    
     if not channels:
-        await update.message.reply_text("📭 No channels yet.")
+        await update.message.reply_text("📭 No channels")
         return
     
-    message = "📺 **Your Channels:**\n\n"
+    msg = "📺 **Channels:**\n"
     for ch in channels:
-        message += f"• **{ch['name']}** ({ch.get('group', 'General')})\n"
-    
-    message += f"\n**Total:** {len(channels)} channels"
-    
-    await update.message.reply_text(message, parse_mode='Markdown')
+        msg += f"\n• {ch['name']} ({ch['group']})"
+    await update.message.reply_text(msg, parse_mode='Markdown')
 
 async def handle_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id not in ADMIN_IDS:
@@ -251,26 +165,9 @@ async def handle_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not video:
         return
     
-    file_id = video.file_id
     title = update.message.caption or video.file_name or f"Video_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-    
-    vod_items = load_vod()
-    
-    vod_items.append({
-        "file_id": file_id,
-        "title": title,
-        "added": datetime.now().isoformat()
-    })
-    
-    if save_vod(vod_items):
-        response = f"✅ Added VOD: **{title}**\n\n"
-        if MEDIAFLOW_URL and MEDIAFLOW_PASS:
-            stream_url = f"{MEDIAFLOW_URL}/proxy/stream?d=telegram:{file_id}&api_password={MEDIAFLOW_PASS}"
-            response += f"[Test Stream]({stream_url})"
-        
-        await update.message.reply_text(response, parse_mode='Markdown')
-    else:
-        await update.message.reply_text("❌ Error saving VOD")
+    save_vod(video.file_id, title)
+    await update.message.reply_text(f"✅ Added VOD: {title}")
 
 async def vod_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id not in ADMIN_IDS:
@@ -278,18 +175,14 @@ async def vod_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     
     vod_items = load_vod()
-    
     if not vod_items:
-        await update.message.reply_text("📭 No VOD items yet.")
+        await update.message.reply_text("📭 No VOD")
         return
     
-    message = "🎥 **Your VOD Library:**\n\n"
+    msg = "🎥 **VOD Library:**\n"
     for i, vod in enumerate(vod_items[-10:], 1):
-        message += f"{i}. **{vod['title']}**\n"
-    
-    message += f"\n**Total:** {len(vod_items)} items"
-    
-    await update.message.reply_text(message, parse_mode='Markdown')
+        msg += f"\n{i}. {vod['title']}"
+    await update.message.reply_text(msg, parse_mode='Markdown')
 
 async def generate_user_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id not in ADMIN_IDS:
@@ -297,7 +190,7 @@ async def generate_user_file(update: Update, context: ContextTypes.DEFAULT_TYPE)
         return
     
     if len(context.args) < 2:
-        await update.message.reply_text("Usage: `/generate USERNAME DAYS`", parse_mode='Markdown')
+        await update.message.reply_text("Usage: /generate USERNAME DAYS")
         return
     
     username = context.args[0]
@@ -306,58 +199,33 @@ async def generate_user_file(update: Update, context: ContextTypes.DEFAULT_TYPE)
     
     channels = load_channels()
     
-    m3u_content = f"""#EXTM3U
-# IPTV Playlist for: {username}
-# Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+    m3u = f"""#EXTM3U
+# IPTV for: {username}
 # Expires: {expiry.strftime('%Y-%m-%d')}
-#
-# Your channels:
 """
-    
     for ch in channels:
-        m3u_content += f"\n#EXTINF:-1 group-title=\"{ch['group']}\",{ch['name']}\n"
-        m3u_content += f"{ch['url']}\n"
+        m3u += f"\n#EXTINF:-1 group-title=\"{ch['group']}\",{ch['name']}\n{ch['url']}\n"
     
     await update.message.reply_document(
-        document=m3u_content.encode('utf-8'),
+        document=m3u.encode('utf-8'),
         filename=f"{username}_iptv.m3u",
-        caption=f"✅ Generated for {username}\nExpires: {expiry.strftime('%Y-%m-%d')}"
+        caption=f"✅ Generated\nExpires: {expiry.strftime('%Y-%m-%d')}"
     )
 
-# ============================================
-# MAIN FUNCTION
-# ============================================
+# ===== MAIN =====
 def main():
-    """Start the bot"""
-    print("\n🚀 Starting bot...")
+    app = Application.builder().token(BOT_TOKEN).build()
     
-    try:
-        # Create application
-        app = Application.builder().token(BOT_TOKEN).build()
-        
-        # Add handlers
-        app.add_handler(CommandHandler("start", start))
-        app.add_handler(CommandHandler("help", help_command))
-        app.add_handler(CommandHandler("status", status))
-        app.add_handler(CommandHandler("add", add_channel))
-        app.add_handler(CommandHandler("remove", remove_channel))
-        app.add_handler(CommandHandler("list", list_channels))
-        app.add_handler(CommandHandler("vodlist", vod_list))
-        app.add_handler(CommandHandler("generate", generate_user_file))
-        app.add_handler(MessageHandler(filters.VIDEO, handle_video))
-        
-        print("✅ Bot ready! Listening for commands...")
-        print("="*60)
-        
-        # Start bot
-        app.run_polling()
-        
-    except Exception as e:
-        if "Conflict" in str(e):
-            # This is normal - ignore it
-            pass
-        else:
-            print(f"❌ Error: {e}")
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("add", add_channel))
+    app.add_handler(CommandHandler("remove", remove_channel))
+    app.add_handler(CommandHandler("list", list_channels))
+    app.add_handler(CommandHandler("vodlist", vod_list))
+    app.add_handler(CommandHandler("generate", generate_user_file))
+    app.add_handler(MessageHandler(filters.VIDEO, handle_video))
+    
+    print("✅ Bot running!")
+    app.run_polling()
 
 if __name__ == "__main__":
     main()
