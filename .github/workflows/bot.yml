@@ -2,7 +2,7 @@ name: IPTV Bot
 
 on:
   schedule:
-    - cron: '*/30 * * * *'  # Run every 30 minutes
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -10,30 +10,34 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout
+    - name: Checkout code
       uses: actions/checkout@v3
     
-    - name: Python Setup
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
     
-    - name: Install
+    - name: Install dependencies
       run: pip install python-telegram-bot==20.7
     
     - name: Run Bot
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         ADMIN_IDS: ${{ secrets.ADMIN_IDS }}
-        MEDIAFLOW_URL: ${{ secrets.MEDIAFLOW_URL }}
-        MEDIAFLOW_PASS: ${{ secrets.MEDIAFLOW_PASS }}
       run: python bot.py
     
-    - name: Force Save ALL Files
+    - name: SAVE DATA (FORCE PUSH)
       run: |
-        git config --global user.name "bot"
+        # Configure git
+        git config --global user.name "GitHub Bot"
         git config --global user.email "bot@github.com"
-        git add -A --force
-        git commit -m "Auto-save $(date)" || exit 0
-        git pull --rebase origin main
-        git push
+        
+        # Force add ALL files (including json)
+        git add -f channels.json vod.json
+        
+        # Commit if there are changes
+        git diff --staged --quiet || git commit -m "Update data"
+        
+        # Force push to overwrite everything
+        git push origin main --force
