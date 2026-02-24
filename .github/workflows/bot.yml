@@ -1,6 +1,5 @@
 name: IPTV Bot
 
-# This ensures only ONE run at a time
 concurrency:
   group: iptv-bot-production
   cancel-in-progress: true
@@ -30,6 +29,8 @@ jobs:
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         ADMIN_IDS: ${{ secrets.ADMIN_IDS }}
+        MEDIAFLOW_URL: ${{ secrets.MEDIAFLOW_URL }}
+        MEDIAFLOW_PASS: ${{ secrets.MEDIAFLOW_PASS }}
       run: python bot.py
     
     - name: Save Data
@@ -38,6 +39,6 @@ jobs:
         git config --global user.name "GitHub Bot"
         git config --global user.email "bot@github.com"
         git add -f channels.json vod.json
-        git diff --staged --quiet || git commit -m "Save data"
+        git diff --staged --quiet || git commit -m "Save data $(date)"
         git pull --rebase origin main
         git push
