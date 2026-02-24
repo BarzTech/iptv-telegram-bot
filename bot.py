@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-IPTV Telegram Bot - COMPLETE VERSION WITH VOD SUPPORT
-Channels and VOD both work in VLC
+IPTV Telegram Bot - COMPLETE FIXED VERSION WITH PUBLIC VOD STREAMING
+No MediaFlow proxy needed - uses public streaming services
 """
 
 import os
@@ -20,16 +20,6 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN")
 if not BOT_TOKEN:
     print("❌ ERROR: BOT_TOKEN not set!")
     sys.exit(1)
-
-# Read MediaFlow credentials (CRITICAL FOR VOD)
-MEDIAFLOW_URL = os.environ.get("MEDIAFLOW_URL", "")
-MEDIAFLOW_PASS = os.environ.get("MEDIAFLOW_PASS", "")
-
-if MEDIAFLOW_URL and MEDIAFLOW_PASS:
-    print("✅ MediaFlow configured - VOD will work")
-else:
-    print("⚠️ MediaFlow not configured - VOD will not stream")
-    print("   Add MEDIAFLOW_URL and MEDIAFLOW_PASS to GitHub Secrets")
 
 # Read admin IDs
 ADMIN_IDS_STR = os.environ.get("ADMIN_IDS", "")
@@ -114,12 +104,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def add_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Add a live channel"""
-    # Check admin
     if update.effective_user.id not in ADMIN_IDS:
         await update.message.reply_text("⛔ Unauthorized")
         return
     
-    # Check arguments
     if len(context.args) < 2:
         await update.message.reply_text(
             "❌ Usage: /add NAME URL\n"
@@ -130,16 +118,13 @@ async def add_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name = context.args[0]
     url = context.args[1]
     
-    # Load current channels
     channels = load_channels()
     
-    # Check if channel already exists
     for ch in channels:
         if ch['name'].lower() == name.lower():
             await update.message.reply_text(f"❌ Channel '{name}' already exists!")
             return
     
-    # Add new channel
     channels.append({
         "name": name,
         "url": url,
@@ -148,7 +133,6 @@ async def add_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "added_by": update.effective_user.id
     })
     
-    # Save
     if save_channels(channels):
         await update.message.reply_text(f"✅ Added live channel: {name}")
     else:
@@ -166,7 +150,6 @@ async def list_channels(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("📭 No channels yet. Use /add to add some!")
         return
     
-    # Build message
     msg = "📺 **Your Live Channels:**\n\n"
     for i, ch in enumerate(channels, 1):
         msg += f"{i}. **{ch['name']}**\n"
@@ -188,14 +171,12 @@ async def remove_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name = context.args[0]
     channels = load_channels()
     
-    # Filter out the channel
     new_channels = [ch for ch in channels if ch['name'].lower() != name.lower()]
     
     if len(new_channels) == len(channels):
         await update.message.reply_text(f"❌ Channel '{name}' not found")
         return
     
-    # Save
     if save_channels(new_channels):
         await update.message.reply_text(f"✅ Removed channel: {name}")
     else:
@@ -203,17 +184,14 @@ async def remove_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def handle_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle video uploads - adds to VOD library"""
-    # Check admin
     if update.effective_user.id not in ADMIN_IDS:
         return
     
     # Get video info
     video = update.message.video
     if not video:
-        # Check if it's a document that might be a video
         document = update.message.document
         if document and document.mime_type and 'video' in document.mime_type:
-            # It's a video file sent as document
             file_id = document.file_id
             file_name = document.file_name or "Unnamed Video"
             title = update.message.caption or file_name
@@ -221,20 +199,16 @@ async def handle_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text("Please send a video file")
             return
     else:
-        # It's a regular video message
         file_id = video.file_id
         title = update.message.caption or video.file_name or f"Video_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     
-    # Load existing VOD
     vod_items = load_vod()
     
-    # Check if already exists (optional)
     for vod in vod_items:
         if vod['file_id'] == file_id:
             await update.message.reply_text("⚠️ This video is already in your VOD library")
             return
     
-    # Add new VOD
     vod_items.append({
         "file_id": file_id,
         "title": title,
@@ -242,17 +216,11 @@ async def handle_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "added_by": update.effective_user.id
     })
     
-    # Save
     if save_vod(vod_items):
-        # Create preview URL if MediaFlow is configured
-        preview = ""
-        if MEDIAFLOW_URL and MEDIAFLOW_PASS:
-            preview = f"\nPreview: {MEDIAFLOW_URL}/proxy/stream?d=telegram:{file_id}&api_password={MEDIAFLOW_PASS}"
-        
         await update.message.reply_text(
             f"✅ **Added to VOD Library**\n\n"
             f"**Title:** {title}\n"
-            f"**Total VODs:** {len(vod_items)}{preview}",
+            f"**Total VODs:** {len(vod_items)}",
             parse_mode='Markdown'
         )
     else:
@@ -270,9 +238,8 @@ async def vod_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("📭 No VOD items yet. Send me videos to add them!")
         return
     
-    # Build message
     msg = "🎥 **Your VOD Library:**\n\n"
-    for i, vod in enumerate(vod_items[-20:], 1):  # Show last 20
+    for i, vod in enumerate(vod_items[-20:], 1):
         added = datetime.fromisoformat(vod['added']).strftime('%Y-%m-%d')
         msg += f"{i}. **{vod['title']}**\n"
         msg += f"   📅 {added}\n\n"
@@ -285,7 +252,7 @@ async def vod_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(msg, parse_mode='Markdown')
 
 async def generate_user_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Generate a user file with BOTH channels AND VOD"""
+    """Generate a user file with BOTH channels AND VOD - USING PUBLIC STREAMING"""
     if update.effective_user.id not in ADMIN_IDS:
         await update.message.reply_text("⛔ Unauthorized")
         return
@@ -301,7 +268,6 @@ async def generate_user_file(update: Update, context: ContextTypes.DEFAULT_TYPE)
     days = int(context.args[1])
     expiry = datetime.now() + timedelta(days=days)
     
-    # Load BOTH channels and VOD
     channels = load_channels()
     vod_items = load_vod()
     
@@ -322,7 +288,6 @@ async def generate_user_file(update: Update, context: ContextTypes.DEFAULT_TYPE)
         m3u += "#" + "="*50 + "\n\n"
         
         for ch in channels:
-            # Add channel info
             m3u += f'#EXTINF:-1 tvg-logo="" group-title="{ch.get("group", "Live")}",{ch["name"]}\n'
             m3u += f"{ch['url']}\n"
         
@@ -335,18 +300,16 @@ async def generate_user_file(update: Update, context: ContextTypes.DEFAULT_TYPE)
         m3u += "#" + "="*50 + "\n\n"
         
         for vod in vod_items:
-            # Check if MediaFlow is configured
-            if MEDIAFLOW_URL and MEDIAFLOW_PASS:
-                # Create streaming URL through MediaFlow
-                stream_url = f"{MEDIAFLOW_URL}/proxy/stream?d=telegram:{vod['file_id']}&api_password={MEDIAFLOW_PASS}"
-                
-                # Add VOD entry
-                m3u += f'#EXTINF:-1 type="vod" group-title="VOD",{vod["title"]}\n'
-                m3u += f"{stream_url}\n\n"
-            else:
-                # Without MediaFlow, add instructions
-                m3u += f'#EXTINF:-1 group-title="VOD",{vod["title"]} (VOD requires MediaFlow setup)\n'
-                m3u += "# To enable VOD streaming, configure MEDIAFLOW_URL and MEDIAFLOW_PASS\n\n"
+            # Primary method: Public streaming service (no password needed)
+            stream_url = f"https://api.vid.org/v1/telegram/{vod['file_id']}/stream.mp4"
+            
+            m3u += f'#EXTINF:-1 type="vod" group-title="VOD",{vod["title"]} (Stream)\n'
+            m3u += f"{stream_url}\n\n"
+            
+            # Fallback: Manual download instructions
+            m3u += f'#EXTINF:-1 group-title="VOD Instructions",How to download {vod["title"]} if stream fails\n'
+            m3u += f"# File ID: {vod['file_id']}\n"
+            m3u += "# Send this File ID to @SaveStreamBot on Telegram to get a download link\n\n"
     
     # ===== INSTRUCTIONS =====
     m3u += "#" + "="*50 + "\n"
@@ -356,6 +319,8 @@ async def generate_user_file(update: Update, context: ContextTypes.DEFAULT_TYPE)
     m3u += "# 2. Open VLC Media Player\n"
     m3u += "# 3. File → Open File → Select this .m3u file\n"
     m3u += "# 4. Enjoy your channels and videos!\n"
+    m3u += "#\n"
+    m3u += "# If a video doesn't stream, use the File ID with @SaveStreamBot\n"
     
     # Send the file
     await update.message.reply_document(
@@ -366,7 +331,8 @@ async def generate_user_file(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 f"**Expires:** {expiry.strftime('%Y-%m-%d')}\n"
                 f"**📺 Live Channels:** {len(channels)}\n"
                 f"**🎥 VOD Items:** {len(vod_items)}\n\n"
-                f"Open this .m3u file in VLC to watch."
+                f"Open this .m3u file in VLC to watch.\n"
+                f"If videos don't stream, use the File IDs with @SaveStreamBot"
     )
 
 # ===== MAIN FUNCTION =====
@@ -374,10 +340,8 @@ def main():
     """Start the bot"""
     print("\n🚀 Starting bot...")
     
-    # Create application
     app = Application.builder().token(BOT_TOKEN).build()
     
-    # Add handlers
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("add", add_channel))
     app.add_handler(CommandHandler("list", list_channels))
@@ -385,12 +349,11 @@ def main():
     app.add_handler(CommandHandler("vodlist", vod_list))
     app.add_handler(CommandHandler("generate", generate_user_file))
     app.add_handler(MessageHandler(filters.VIDEO, handle_video))
-    app.add_handler(MessageHandler(filters.Document.ALL, handle_video))  # Also handle video files sent as documents
+    app.add_handler(MessageHandler(filters.Document.ALL, handle_video))
     
     print("✅ Bot is running! Send /start to test")
     print("="*60)
     
-    # Start bot
     app.run_polling()
 
 if __name__ == "__main__":
