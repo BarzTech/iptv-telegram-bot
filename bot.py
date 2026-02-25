@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """
-IPTV Telegram Bot - COMPLETE FIXED VERSION WITH PUBLIC VOD STREAMING
-No MediaFlow proxy needed - uses public streaming services
+IPTV Telegram Bot - CSV STORAGE VERSION
+Channels stored in CSV for permanent, editable storage
 """
 
 import os
 import sys
+import csv
 import json
-import logging
 from datetime import datetime, timedelta
 from typing import List, Dict
 
 # ===== READ ENVIRONMENT VARIABLES =====
 print("="*60)
-print("IPTV BOT STARTING - VOD ENABLED")
+print("IPTV BOT STARTING - CSV STORAGE")
 print("="*60)
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
@@ -21,7 +21,6 @@ if not BOT_TOKEN:
     print("❌ ERROR: BOT_TOKEN not set!")
     sys.exit(1)
 
-# Read admin IDs
 ADMIN_IDS_STR = os.environ.get("ADMIN_IDS", "")
 ADMIN_IDS = []
 if ADMIN_IDS_STR:
@@ -34,62 +33,112 @@ if ADMIN_IDS_STR:
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
-# ===== DATA STORAGE =====
-CHANNELS_FILE = "channels.json"
-VOD_FILE = "vod.json"
+# ===== CSV FILE STORAGE =====
+CHANNELS_CSV = "channels.csv"
+VOD_CSV = "vod.csv"
+
+def init_csv_files():
+    """Create CSV files with headers if they don't exist"""
+    # Channels CSV: name, url, group, added_date
+    if not os.path.exists(CHANNELS_CSV):
+        with open(CHANNELS_CSV, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow(['name', 'url', 'group', 'added_date'])
+        print(f"✅ Created {CHANNELS_CSV}")
+    
+    # VOD CSV: title, file_id, source, added_date
+    if not os.path.exists(VOD_CSV):
+        with open(VOD_CSV, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow(['title', 'url', 'file_id', 'source', 'added_date'])
+        print(f"✅ Created {VOD_CSV}")
 
 def load_channels() -> List[Dict]:
-    """Load channels from JSON file"""
+    """Load channels from CSV file"""
+    channels = []
     try:
-        if os.path.exists(CHANNELS_FILE):
-            with open(CHANNELS_FILE, 'r') as f:
-                data = json.load(f)
-                print(f"📺 Loaded {len(data)} channels")
-                return data
+        if os.path.exists(CHANNELS_CSV):
+            with open(CHANNELS_CSV, 'r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                channels = list(reader)
+            print(f"📺 Loaded {len(channels)} channels from CSV")
     except Exception as e:
         print(f"⚠️ Error loading channels: {e}")
-    return []
+    return channels
 
 def save_channels(channels: List[Dict]) -> bool:
-    """Save channels to JSON file"""
+    """Save channels to CSV file"""
     try:
-        with open(CHANNELS_FILE, 'w') as f:
-            json.dump(channels, f, indent=2)
-        print(f"✅ Saved {len(channels)} channels")
+        with open(CHANNELS_CSV, 'w', newline='', encoding='utf-8') as f:
+            fieldnames = ['name', 'url', 'group', 'added_date']
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(channels)
+        print(f"✅ Saved {len(channels)} channels to CSV")
         return True
     except Exception as e:
         print(f"❌ Error saving channels: {e}")
         return False
 
-def load_vod() -> List[Dict]:
-    """Load VOD items from JSON file"""
+def add_channel_to_csv(name: str, url: str, group: str = "Live") -> bool:
+    """Append a single channel to CSV (more efficient)"""
     try:
-        if os.path.exists(VOD_FILE):
-            with open(VOD_FILE, 'r') as f:
-                data = json.load(f)
-                print(f"🎥 Loaded {len(data)} VOD items")
-                return data
+        with open(CHANNELS_CSV, 'a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow([name, url, group, datetime.now().isoformat()])
+        print(f"✅ Appended channel: {name}")
+        return True
+    except Exception as e:
+        print(f"❌ Error appending channel: {e}")
+        return False
+
+def load_vod() -> List[Dict]:
+    """Load VOD items from CSV"""
+    vod_items = []
+    try:
+        if os.path.exists(VOD_CSV):
+            with open(VOD_CSV, 'r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                vod_items = list(reader)
+            print(f"🎥 Loaded {len(vod_items)} VOD items from CSV")
     except Exception as e:
         print(f"⚠️ Error loading VOD: {e}")
-    return []
+    return vod_items
 
 def save_vod(vod_items: List[Dict]) -> bool:
-    """Save VOD items to JSON file"""
+    """Save VOD items to CSV"""
     try:
-        with open(VOD_FILE, 'w') as f:
-            json.dump(vod_items, f, indent=2)
-        print(f"✅ Saved {len(vod_items)} VOD items")
+        with open(VOD_CSV, 'w', newline='', encoding='utf-8') as f:
+            fieldnames = ['title', 'url', 'file_id', 'source', 'added_date']
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(vod_items)
+        print(f"✅ Saved {len(vod_items)} VOD items to CSV")
         return True
     except Exception as e:
         print(f"❌ Error saving VOD: {e}")
         return False
 
+def add_vod_to_csv(title: str, url: str = "", file_id: str = "", source: str = "telegram") -> bool:
+    """Append a single VOD to CSV"""
+    try:
+        with open(VOD_CSV, 'a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow([title, url, file_id, source, datetime.now().isoformat()])
+        print(f"✅ Appended VOD: {title}")
+        return True
+    except Exception as e:
+        print(f"❌ Error appending VOD: {e}")
+        return False
+
+# Initialize CSV files on startup
+init_csv_files()
+
 # ===== TELEGRAM HANDLERS =====
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Welcome message"""
     await update.message.reply_text(
-        "🎬 **IPTV Bot - Running**\n\n"
+        "🎬 **IPTV Bot - CSV Storage Version**\n\n"
         "**Commands:**\n"
         "/add NAME URL - Add live channel\n"
         "/list - List all channels\n"
@@ -97,49 +146,37 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Send any video - Add to VOD library\n"
         "/vodlist - List all VOD items\n"
         "/generate USERNAME DAYS - Create user file\n\n"
-        "**Example:**\n"
-        "/add BBC http://example.com/stream.m3u8",
+        "**Data stored in CSV files - permanent and editable!**",
         parse_mode='Markdown'
     )
 
 async def add_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Add a live channel"""
     if update.effective_user.id not in ADMIN_IDS:
         await update.message.reply_text("⛔ Unauthorized")
         return
     
     if len(context.args) < 2:
-        await update.message.reply_text(
-            "❌ Usage: /add NAME URL\n"
-            "Example: /add BBC http://example.com/stream.m3u8"
-        )
+        await update.message.reply_text("Usage: /add NAME URL [GROUP]")
         return
     
     name = context.args[0]
     url = context.args[1]
+    group = context.args[2] if len(context.args) > 2 else "Live"
     
+    # Check if channel already exists
     channels = load_channels()
-    
     for ch in channels:
         if ch['name'].lower() == name.lower():
             await update.message.reply_text(f"❌ Channel '{name}' already exists!")
             return
     
-    channels.append({
-        "name": name,
-        "url": url,
-        "group": "Live",
-        "added": datetime.now().isoformat(),
-        "added_by": update.effective_user.id
-    })
-    
-    if save_channels(channels):
-        await update.message.reply_text(f"✅ Added live channel: {name}")
+    # Append to CSV
+    if add_channel_to_csv(name, url, group):
+        await update.message.reply_text(f"✅ Added channel: {name}")
     else:
         await update.message.reply_text("❌ Failed to save channel")
 
 async def list_channels(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """List all live channels"""
     if update.effective_user.id not in ADMIN_IDS:
         await update.message.reply_text("⛔ Unauthorized")
         return
@@ -147,19 +184,18 @@ async def list_channels(update: Update, context: ContextTypes.DEFAULT_TYPE):
     channels = load_channels()
     
     if not channels:
-        await update.message.reply_text("📭 No channels yet. Use /add to add some!")
+        await update.message.reply_text("📭 No channels yet")
         return
     
-    msg = "📺 **Your Live Channels:**\n\n"
+    msg = "📺 **Your Channels:**\n\n"
     for i, ch in enumerate(channels, 1):
-        msg += f"{i}. **{ch['name']}**\n"
+        msg += f"{i}. **{ch['name']}** ({ch.get('group', 'Live')})\n"
     
     msg += f"\n**Total:** {len(channels)} channels"
     
     await update.message.reply_text(msg, parse_mode='Markdown')
 
 async def remove_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Remove a live channel"""
     if update.effective_user.id not in ADMIN_IDS:
         await update.message.reply_text("⛔ Unauthorized")
         return
@@ -171,19 +207,21 @@ async def remove_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name = context.args[0]
     channels = load_channels()
     
+    # Filter out the channel
     new_channels = [ch for ch in channels if ch['name'].lower() != name.lower()]
     
     if len(new_channels) == len(channels):
         await update.message.reply_text(f"❌ Channel '{name}' not found")
         return
     
+    # Save all channels (rewrite entire file)
     if save_channels(new_channels):
         await update.message.reply_text(f"✅ Removed channel: {name}")
     else:
         await update.message.reply_text("❌ Failed to save changes")
 
 async def handle_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handle video uploads - adds to VOD library"""
+    """Handle video uploads - saves to CSV"""
     if update.effective_user.id not in ADMIN_IDS:
         return
     
@@ -193,8 +231,7 @@ async def handle_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
         document = update.message.document
         if document and document.mime_type and 'video' in document.mime_type:
             file_id = document.file_id
-            file_name = document.file_name or "Unnamed Video"
-            title = update.message.caption or file_name
+            title = update.message.caption or document.file_name or "Unnamed Video"
         else:
             await update.message.reply_text("Please send a video file")
             return
@@ -202,21 +239,10 @@ async def handle_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
         file_id = video.file_id
         title = update.message.caption or video.file_name or f"Video_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     
-    vod_items = load_vod()
-    
-    for vod in vod_items:
-        if vod['file_id'] == file_id:
-            await update.message.reply_text("⚠️ This video is already in your VOD library")
-            return
-    
-    vod_items.append({
-        "file_id": file_id,
-        "title": title,
-        "added": datetime.now().isoformat(),
-        "added_by": update.effective_user.id
-    })
-    
-    if save_vod(vod_items):
+    # Append to CSV
+    if add_vod_to_csv(title, "", file_id, "telegram"):
+        # Count total VODs
+        vod_items = load_vod()
         await update.message.reply_text(
             f"✅ **Added to VOD Library**\n\n"
             f"**Title:** {title}\n"
@@ -227,7 +253,6 @@ async def handle_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("❌ Failed to save VOD")
 
 async def vod_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """List all VOD items"""
     if update.effective_user.id not in ADMIN_IDS:
         await update.message.reply_text("⛔ Unauthorized")
         return
@@ -235,33 +260,25 @@ async def vod_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     vod_items = load_vod()
     
     if not vod_items:
-        await update.message.reply_text("📭 No VOD items yet. Send me videos to add them!")
+        await update.message.reply_text("📭 No VOD items yet")
         return
     
     msg = "🎥 **Your VOD Library:**\n\n"
     for i, vod in enumerate(vod_items[-20:], 1):
-        added = datetime.fromisoformat(vod['added']).strftime('%Y-%m-%d')
         msg += f"{i}. **{vod['title']}**\n"
-        msg += f"   📅 {added}\n\n"
-    
-    if len(vod_items) > 20:
-        msg += f"... and {len(vod_items)-20} more\n"
     
     msg += f"\n**Total:** {len(vod_items)} items"
     
     await update.message.reply_text(msg, parse_mode='Markdown')
 
 async def generate_user_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Generate a user file with BOTH channels AND VOD - USING PUBLIC STREAMING"""
+    """Generate M3U file from CSV data"""
     if update.effective_user.id not in ADMIN_IDS:
         await update.message.reply_text("⛔ Unauthorized")
         return
     
     if len(context.args) < 2:
-        await update.message.reply_text(
-            "❌ Usage: /generate USERNAME DAYS\n"
-            "Example: /generate john 30"
-        )
+        await update.message.reply_text("Usage: /generate USERNAME DAYS")
         return
     
     username = context.args[0]
@@ -271,58 +288,46 @@ async def generate_user_file(update: Update, context: ContextTypes.DEFAULT_TYPE)
     channels = load_channels()
     vod_items = load_vod()
     
-    # Start building the M3U file
+    # Build M3U
     m3u = f"""#EXTM3U
 # IPTV Playlist for: {username}
 # Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 # Expires: {expiry.strftime('%Y-%m-%d')}
+# Data source: CSV files
 #
 # This file contains {len(channels)} live channels and {len(vod_items)} VOD items
 #
 """
     
-    # ===== LIVE CHANNELS SECTION =====
+    # Live channels
     if channels:
         m3u += "#" + "="*50 + "\n"
         m3u += "# LIVE CHANNELS\n"
         m3u += "#" + "="*50 + "\n\n"
         
         for ch in channels:
-            m3u += f'#EXTINF:-1 tvg-logo="" group-title="{ch.get("group", "Live")}",{ch["name"]}\n'
+            m3u += f'#EXTINF:-1 group-title="{ch.get("group", "Live")}",{ch["name"]}\n'
             m3u += f"{ch['url']}\n"
         
         m3u += "\n"
     
-    # ===== VOD SECTION =====
+    # VOD section
     if vod_items:
         m3u += "#" + "="*50 + "\n"
-        m3u += "# VOD LIBRARY (Movies & Videos)\n"
+        m3u += "# VOD LIBRARY\n"
         m3u += "#" + "="*50 + "\n\n"
         
         for vod in vod_items:
-            # Primary method: Public streaming service (no password needed)
-            stream_url = f"https://api.vid.org/v1/telegram/{vod['file_id']}/stream.mp4"
-            
-            m3u += f'#EXTINF:-1 type="vod" group-title="VOD",{vod["title"]} (Stream)\n'
-            m3u += f"{stream_url}\n\n"
-            
-            # Fallback: Manual download instructions
-            m3u += f'#EXTINF:-1 group-title="VOD Instructions",How to download {vod["title"]} if stream fails\n'
-            m3u += f"# File ID: {vod['file_id']}\n"
-            m3u += "# Send this File ID to @SaveStreamBot on Telegram to get a download link\n\n"
+            if vod.get('source') == 'screenpal' and vod.get('url'):
+                # External URL
+                m3u += f'#EXTINF:-1 group-title="VOD",{vod["title"]}\n'
+                m3u += f"{vod['url']}\n\n"
+            elif vod.get('file_id'):
+                # Telegram video with instructions
+                m3u += f'#EXTINF:-1 group-title="VOD - Telegram",{vod["title"]}\n'
+                m3u += f"# File ID: {vod['file_id']}\n"
+                m3u += "# Use @SaveStreamBot to download\n\n"
     
-    # ===== INSTRUCTIONS =====
-    m3u += "#" + "="*50 + "\n"
-    m3u += "# INSTRUCTIONS\n"
-    m3u += "#" + "="*50 + "\n"
-    m3u += "# 1. Save this file\n"
-    m3u += "# 2. Open VLC Media Player\n"
-    m3u += "# 3. File → Open File → Select this .m3u file\n"
-    m3u += "# 4. Enjoy your channels and videos!\n"
-    m3u += "#\n"
-    m3u += "# If a video doesn't stream, use the File ID with @SaveStreamBot\n"
-    
-    # Send the file
     await update.message.reply_document(
         document=m3u.encode('utf-8'),
         filename=f"{username}_iptv.m3u",
@@ -331,14 +336,31 @@ async def generate_user_file(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 f"**Expires:** {expiry.strftime('%Y-%m-%d')}\n"
                 f"**📺 Live Channels:** {len(channels)}\n"
                 f"**🎥 VOD Items:** {len(vod_items)}\n\n"
-                f"Open this .m3u file in VLC to watch.\n"
-                f"If videos don't stream, use the File IDs with @SaveStreamBot"
+                f"Data stored in CSV files in your repository!"
     )
 
-# ===== MAIN FUNCTION =====
+# ===== ADD EXTERNAL VOD COMMAND =====
+async def add_external_vod(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Add VOD from external URL (ScreenPal, etc.) - Usage: /addext TITLE URL"""
+    if update.effective_user.id not in ADMIN_IDS:
+        await update.message.reply_text("⛔ Unauthorized")
+        return
+    
+    if len(context.args) < 2:
+        await update.message.reply_text("Usage: /addext TITLE URL")
+        return
+    
+    title = " ".join(context.args[:-1])
+    url = context.args[-1]
+    
+    if add_vod_to_csv(title, url, "", "screenpal"):
+        await update.message.reply_text(f"✅ Added external VOD: {title}")
+    else:
+        await update.message.reply_text("❌ Failed to save")
+
+# ===== MAIN =====
 def main():
-    """Start the bot"""
-    print("\n🚀 Starting bot...")
+    print("\n🚀 Starting bot with CSV storage...")
     
     app = Application.builder().token(BOT_TOKEN).build()
     
@@ -348,6 +370,7 @@ def main():
     app.add_handler(CommandHandler("remove", remove_channel))
     app.add_handler(CommandHandler("vodlist", vod_list))
     app.add_handler(CommandHandler("generate", generate_user_file))
+    app.add_handler(CommandHandler("addext", add_external_vod))
     app.add_handler(MessageHandler(filters.VIDEO, handle_video))
     app.add_handler(MessageHandler(filters.Document.ALL, handle_video))
     
