@@ -16,6 +16,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Python Setup
       uses: actions/setup-python@v4
@@ -31,12 +33,12 @@ jobs:
         ADMIN_IDS: ${{ secrets.ADMIN_IDS }}
       run: python bot.py
     
-    - name: Save Data
+    - name: Save CSV Files
       if: always()
       run: |
         git config --global user.name "GitHub Bot"
         git config --global user.email "bot@github.com"
-        git add -f channels.json vod.json
-        git diff --staged --quiet || git commit -m "Save data $(date)"
+        git add -f channels.csv vod.csv
+        git diff --staged --quiet || git commit -m "Update CSV data $(date)"
         git pull --rebase origin main
         git push
