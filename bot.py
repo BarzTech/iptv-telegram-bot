@@ -9,7 +9,6 @@ import sys
 import json
 import csv
 import secrets
-import pandas as pd
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
 
