@@ -14,31 +14,63 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout
+    - name: Checkout repository
       uses: actions/checkout@v3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Python Setup
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
     
-    - name: Install
-      run: pip install python-telegram-bot==20.7
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install python-telegram-bot==20.7 pandas==2.0.3
     
-    - name: Run Bot
+    - name: Run Telegram Bot
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         ADMIN_IDS: ${{ secrets.ADMIN_IDS }}
-      run: python bot.py
+      run: |
+        echo "🚀 Starting IPTV Bot..."
+        python bot.py
     
-    - name: Save CSV Files
+    - name: Save ALL Data Files
       if: always()
       run: |
+        # Configure git
         git config --global user.name "GitHub Bot"
         git config --global user.email "bot@github.com"
-        git add -f channels.csv vod.csv
-        git diff --staged --quiet || git commit -m "Update CSV data $(date)"
-        git pull --rebase origin main
-        git push
+        
+        # List all files that might exist
+        echo "📁 Checking for files to save..."
+        
+        # Add files only if they exist
+        for file in channels.csv vod.csv channels.json vod.json customers.json tokens.json; do
+          if [ -f "$file" ]; then
+            echo "✅ Adding $file"
+            git add -f "$file"
+          else
+            echo "⚠️ $file not found - skipping"
+          fi
+        done
+        
+        # Also add any CSV files that might have been created
+        for file in *.csv; do
+          if [ -f "$file" ] && [ "$file" != "channels.csv" ]; then
+            echo "✅ Adding additional CSV: $file"
+            git add -f "$file"
+          fi
+        done
+        
+        # Check if there are changes to commit
+        if git diff --staged --quiet; then
+          echo "ℹ️ No changes to commit"
+        else
+          git commit -m "Save data files $(date)"
+          git pull --rebase origin main
+          git push
+          echo "✅ Data saved to repository"
+        fi
