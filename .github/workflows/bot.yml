@@ -27,7 +27,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install python-telegram-bot==20.7 pandas==2.0.3
+        pip install python-telegram-bot==20.7
     
     - name: Run Telegram Bot
       env:
