@@ -11,7 +11,6 @@ CrossRift,https://rhine.webchnl.live/memfs/47d19130-274d-443f-b757-b6165019fdb1.
 Deflect,https://rhine.webchnl.live/memfs/8a788628-af64-4fae-8dac-2fcb9d1c4eae.m3u8,Entertainment,,,,Entertainment,"indie,internet"
 DIJIT / Joy.Rebel,https://rhine.webchnl.live/memfs/39c22a0a-ba5a-4cda-bb74-83108e8e3e69.m3u8,Music,,English,,Music,"music,indie"
 DoneBetter,https://rhine.webchnl.live/memfs/a0277a2e-9e76-4060-9e07-5d6495e60a66.m3u8,Entertainment,,English,,Entertainment,"indie,internet"
-https://rhine.webchnl.live/ee44b078-5b16-4484-b054-76079dc2d45c/oembed.json,https://rhine.webchnl.live/memfs/ee44b078-5b16-4484-b054-76079dc2d45c.m3u8,General,,,,,
 flashBAK,https://rhine.webchnl.live/memfs/d839aad2-f86a-49d9-bef3-e7c4c2b8e9f0.m3u8,Entertainment,,English,,Entertainment,"retro,indie"
 Nick GaS,https://rhine.webchnl.live/memfs/48e4dd44-3c78-4c9e-99c6-058604ab2962.m3u8,Kids,,English,,Kids,"kids,nickelodeon"
 Object Central | HD,https://rhine.webchnl.live/memfs/dfac9472-bf8f-455c-8306-68184073a2f8.m3u8,Entertainment,,English,HD,Entertainment,"indie,internet"
@@ -59,7 +58,7 @@ ATV,https://strm.hdtvizlecanli.com/live/atv.m3u8,General,Austria,German,,General
 ATV 2,https://viamotionhsi.netplus.ch/live/eds/atv/browser-dash/atv.mpd,General,Austria,German,,General,general
 ORF 1,https://viamotionhsi.netplus.ch/live/eds/orf1/browser-dash/orf1.mpd,General,Austria,German,,General,"general,public"
 ORF 2,https://viamotionhsi.netplus.ch/live/eds/orf2/browser-dash/orf2.mpd,General,Austria,German,,General,"general,public"
-ORF III,http://212.95.30.186:9981/stream/channelid/817337321?profile=pass,General,Austria,German,,General,"culture,public"
+ORF III,http://212.95.30.186:9981/stream/channelid/817337321?profile=pass,General,Austria,German,,Culture,"culture,public"
 ORF Sport+,http://212.186.45.34:9981/stream/channelid/906723447?profile=pass,Sports,Austria,German,,Sports,"sports,public"
 ORF Kids,https://web12.mdn.ors.at/orf/web12/qxb/manifest.m3u8,Kids,Austria,German,,Kids,"kids,public"
 Puls 4,http://212.95.30.186:9981/stream/channelid/1630575394?profile=pass,General,Austria,German,,General,general
@@ -139,7 +138,7 @@ HGTV,http://143.244.35.74:8880/IgorRangelXX/IgorRangel3/26424,Lifestyle,Brazil,P
 Investigation Discovery,http://143.244.35.74:8880/IgorRangelXX/IgorRangel3/60760,Entertainment,Brazil,Portuguese,,Entertainment,"crime,documentary"
 Discovery Turbo,http://143.244.35.74:8880/IgorRangelXX/IgorRangel3/7146,Entertainment,Brazil,Portuguese,,Entertainment,"cars,documentary"
 Paramount Network,http://143.244.35.74:8880/IgorRangelXX/IgorRangel3/60725,Entertainment,Brazil,Portuguese,,Entertainment,"movies,series"
-Discovery Theater,http://143.244.35.74:8880/IgorRangelXX/IgorRangel3/60776,Entertainment,Brazil,Portuguese,,Entertainment,documentary
+Discovery Theater,http://143.244.35.74:8880/IgorRangelXX/IgorRangel3/60776,Documentary,Brazil,Portuguese,,Documentary,documentary
 Discovery World,http://143.244.35.74:8880/IgorRangelXX/IgorRangel3/7145,Documentary,Brazil,Portuguese,,Documentary,documentary
 Discovery Home and Health,http://143.244.35.74:8880/IgorRangelXX/IgorRangel3/22263,Lifestyle,Brazil,Portuguese,,Lifestyle,"health,lifestyle"
 Discovery Kids,http://143.244.35.74:8880/IgorRangelXX/IgorRangel3/26426,Kids,Brazil,Portuguese,,Kids,kids
@@ -471,7 +470,7 @@ TVI Ficção,https://video-auth2.iol.pt/live_tvi_ficcao/live_tvi_ficcao/edge_ser
 TVI Reality,https://video-auth4.iol.pt/live_tvi_reality/live_tvi_reality/edge_servers/tvireality-720_passthrough/playlist.m3u8,Entertainment,Portugal,Portuguese,,Entertainment,reality
 TVR 1,http://188.24.11.82:9981/stream/channelid/2006302830?ticket=49E768B18442D9BF2A06FF998F772CA75689488B&profile=pass,General,Romania,Romanian,,General,"public,general"
 TVR 2,http://188.24.11.82:9981/stream/channelid/820149369?ticket=90D44553F4B561167236377B5CE515917D255AFB&profile=pass,General,Romania,Romanian,,General,"public,general"
-TVR 3,http://188.24.11.82:9981/stream/channelid/1801836540?ticket=A9E4C837FCB04C5C0C18D80BCBE78AC01C28AEA2&profile=pass,Regional,Romania,Romanian,,Regional,"regional,public"
+TVR 3,http://188.24.11.82:9981/stream/channelid/1801836540?ticket=A9E4E7FCB04C5C0C18D80BCBE78AC01C28AEA2&profile=pass,Regional,Romania,Romanian,,Regional,"regional,public"
 TVR Info,http://188.24.11.82:9981/stream/channelid/1904145471?ticket=8CB25791EBCFBED07CD40C7033FCE8F012665852&profile=pass,News,Romania,Romanian,,News,"news,public"
 Pro TV,http://188.24.11.82:9981/stream/channelid/1593684681?ticket=6BC724B09A3C36D760112771B967D9AA4BE64562&profile=pass,General,Romania,Romanian,,General,general
 Antena 1 (RO),http://188.24.11.82:9981/stream/channelid/1172957691?ticket=7620D125CAB7072720A9BF8B4C59BDA98C60D02E&profile=pass,General,Romania,Romanian,,General,general
@@ -532,7 +531,7 @@ FOX (WFLX),https://fl7.moveonjoy.com/FOX_EAST/index.m3u8,General,USA,English,,Ge
 TruTV,https://turnerlive.warnermediacdn.com/hls/live/2023176/trueast/slate/VIDEO_0_3564000.m3u8,Entertainment,USA,English,,Entertainment,"comedy,entertainment"
 TNT (US),https://turnerlive.warnermediacdn.com/hls/live/2023168/tnteast/slate/VIDEO_0_3564000.m3u8,Entertainment,USA,English,,Entertainment,"movies,series"
 HLN,https://turnerlive.warnermediacdn.com/hls/live/586496/cnngo/hln/VIDEO_0_3564000.m3u8,News,USA,English,,News,news
-"Adult Swim (US, 5PM-6AM only)",https://turnerlive.warnermediacdn.com/hls/live/2023183/aseast/noslate/VIDEO_1_5128000.m3u8,Entertainment,USA,English,,Entertainment,"animation,adult"
+Adult Swim (US),https://turnerlive.warnermediacdn.com/hls/live/2023183/aseast/noslate/VIDEO_1_5128000.m3u8,Entertainment,USA,English,,Entertainment,"animation,adult"
 CNN,https://turnerlive.warnermediacdn.com/hls/live/586495/cnngo/cnn_slate/VIDEO_0_3564000.m3u8,News,USA,English,,News,news
 TBS,https://turnerlive.warnermediacdn.com/hls/live/2023172/tbseast/slate/VIDEO_0_3564000.m3u8,Entertainment,USA,English,,Entertainment,"comedy,entertainment"
 TCM,https://turnerlive.warnermediacdn.com/hls/live/2023186/tcmeast/noslate/VIDEO_1_5128000.m3u8,Movies,USA,English,,Movies,"classic,movies"
@@ -570,3 +569,102 @@ VTV3,http://113.177.113.214:9981/stream/channelid/1978056989?profile=pass,Entert
 VTV5,http://113.177.113.214:9981/stream/channelid/1133768036?profile=pass,General,Vietnam,Vietnamese,,General,"ethnic,public"
 VTV7,http://113.177.113.214:9981/stream/channelid/1722586611?profile=pass,Educational,Vietnam,Vietnamese,,Educational,"education,public"
 Vatican Media,http://77.39.161.42:55555/Vatican%20Media%20HD,Religious,Vatican,Italian,,Religious,"religion,catholic"
+Baywatch,https://aka-live491.delivery.roku.com/2821addb-9455-4289-8985-674e002d74fc/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Canela.TV Hollywood y Más,https://aka-live491.delivery.roku.com/d3e3a6dc-08c9-4433-bf93-3bc874abffcc/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Canela.TV Pasión Latina,https://aka-live491.delivery.roku.com/1a55d3da-27ef-44c3-a089-0f98f5db3973/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Cine EstrellaTV,https://aka-live491.delivery.roku.com/ca8ac61f-40c4-44aa-b1c1-05ecf6b92c11/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Cinépolis Channel,https://aka-live491.delivery.roku.com/98881e0d-679d-433b-8765-d95d3afeb21c/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+El Rey Rebel,https://aka-live491.delivery.roku.com/bcd8c150-477b-4ce8-a028-3181c424a9bc/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Electric Now,https://aka-live491.delivery.roku.com/6c9268f6-d17b-49c8-bafb-23b74ae6aa45/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+FILMEX,https://aka-live491.delivery.roku.com/c1f16607-abcf-4fb1-9bdb-469c8d3d1466/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+FILMEX Clásico,https://aka-live491.delivery.roku.com/dee94bdd-c128-4649-95eb-e2cc1e557527/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+FilmRise Action,https://aka-live491.delivery.roku.com/6872f94b-9d18-49bf-83cb-832dd25a5cb4/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+FreeTV Acción,https://aka-live491.delivery.roku.com/16ccb3b4-50c5-4f2c-912f-c9ed6a236373/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+FreeTV Asia,https://aka-live491.delivery.roku.com/e394d580-0f69-4045-9b7d-f001a74eb2e9/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Hi-YAH!,https://aka-live491.delivery.roku.com/f0305333-707a-4f7a-b6e1-568cdfabec70/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Hong Kong Fight Club,https://aka-live491.delivery.roku.com/088a0e0f-7aa5-415d-b5c1-9f89a0899b0d/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+In The Heat of the Night,https://aka-live491.delivery.roku.com/3e9a51b0-5b6c-4d18-bcce-a227f9dabfc6/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Maverick Black Cinema,https://aka-live491.delivery.roku.com/3c0449bf-12ab-47ab-a928-0a51cc1a2349/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+MGM Presents,https://aka-live491.delivery.roku.com/3cc1026b-6105-4bc0-91d5-5cd1bc3df6a2/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Movie Hub,https://aka-live491.delivery.roku.com/4eddfb64-e03e-4a12-b889-53eed835572e/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Movie Hub Action,https://aka-live491.delivery.roku.com/be8e0aad-9c0d-4b4d-ac10-d0c72bb6c7f3/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+NHRA TV,https://aka-live491.delivery.roku.com/38389894-c360-46b6-9961-01322e6678ea/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Outside TV,https://aka-live491.delivery.roku.com/93a5718d-1408-4dcb-9444-348e9e2e19d7/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Pam Grier's Soul Flix,https://aka-live491.delivery.roku.com/f602b404-e45c-4293-98e5-d258978e6c8a/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Power Rangers,https://aka-live491.delivery.roku.com/5f50daaa-1789-48e2-b536-559a5a86a052/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Stargate,https://aka-live491.delivery.roku.com/001a408c-1122-483d-8ee3-c219825b5135/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Transformers,https://aka-live491.delivery.roku.com/73ee2a1b-b841-4143-b9f9-8b00b8f41bb8/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Xena,https://aka-live491.delivery.roku.com/03f41793-8c89-4185-9e6d-7422a8375547/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+Z Nation,https://aka-live491.delivery.roku.com/2b83a0b6-4ce7-4c1c-a4e8-4fea7ab204b9/t2-origin/out/v1/live.m3u8,Action,,English,,Entertainment,action
+American Gladiators,https://aka-live491.delivery.roku.com/01df2f47-d995-462c-ad90-9b78acab1224/t2-origin/out/v1/live.m3u8,Action Sports,,English,,Sports,"sports,action"
+Esports Edge,https://aka-live491.delivery.roku.com/9f97fba6-61c5-4ce6-8e34-ac5f31d83c56/t2-origin/out/v1/live.m3u8,Action Sports,,English,,Sports,"sports,esports"
+Red Bull TV,https://aka-live491.delivery.roku.com/0ad626c0-5e48-4779-a204-0263cdfef356/t2-origin/out/v1/live.m3u8,Action Sports,,English,,Sports,"sports,action"
+Women's Sports Network,https://aka-live491.delivery.roku.com/6155bdf8-2da2-457b-b315-ac28b905821d/t2-origin/out/v1/live.m3u8,Action Sports,,English,,Sports,"sports,women"
+X Games TV,https://aka-live491.delivery.roku.com/c912643a-11b6-4639-a915-b96659634175/t2-origin/out/v1/live.m3u8,Action Sports,,English,,Sports,"sports,action"
+Danger TV,https://aka-live491.delivery.roku.com/8f424c6e-1502-4fa8-9067-5ebabf8645d1/t2-origin/out/v1/live.m3u8,Adventure,,English,,Entertainment,adventure
+Lassie,https://aka-live491.delivery.roku.com/cdb0b44d-432d-49f2-a1ad-07f84857f300/t2-origin/out/v1/live.m3u8,Adventure,,English,,Entertainment,adventure
+Dinos 24/7,https://aka-live491.delivery.roku.com/db18e9b0-cdf6-426a-b032-a04af36b5d8e/t2-origin/out/v1/live.m3u8,Animals,,English,,Documentary,"animals,nature"
+Dog Whisperer With Cesar Millan,https://aka-live491.delivery.roku.com/783ca1cc-309b-4f08-aa3b-295787f4ee9d/t2-origin/out/v1/live.m3u8,Animals,,English,,Documentary,"animals,pets"
+Love Nature English,https://aka-live491.delivery.roku.com/531982b9-848e-4563-ac86-022c63975be7/t2-origin/out/v1/live.m3u8,Animals,,English,,Documentary,"animals,nature"
+Love Nature Spanish,https://aka-live491.delivery.roku.com/c600741a-7139-4b2e-ae6b-8779c57d18dd/t2-origin/out/v1/live.m3u8,Animals,,English,,Documentary,"animals,nature"
+MagellanTV Wildest,https://aka-live491.delivery.roku.com/f86e89b1-f094-4f9b-94e9-eaba63c4f136/t2-origin/out/v1/live.m3u8,Animals,,English,,Documentary,"animals,nature"
+Pet Collective,https://aka-live491.delivery.roku.com/13d06c28-7fed-42c3-ac85-69f9f7e75793/t2-origin/out/v1/live.m3u8,Animals,,English,,Documentary,"animals,pets"
+The Jack Hanna Channel,https://aka-live491.delivery.roku.com/b82321b3-ace3-4dd5-9eaa-e1329813bb02/t2-origin/out/v1/live.m3u8,Animals,,English,,Documentary,"animals,nature"
+WildEarth,https://aka-live491.delivery.roku.com/ed00d96f-28b9-4d3f-a01e-9c98bfe984c2/t2-origin/out/v1/live.m3u8,Animals,,English,,Documentary,"animals,nature"
+Animation+,https://aka-live491.delivery.roku.com/bf285a58-b9ac-457c-ac7d-cf7b207f3140/t2-origin/out/v1/live.m3u8,Animated,,English,,Kids,"animated,cartoons"
+Anime X HiDive,https://aka-live491.delivery.roku.com/bb8d07e9-952d-40b5-8104-5fe09bdb3f65/t2-origin/out/v1/live.m3u8,Animated,,English,,Kids,"anime,animated"
+Pink Panther,https://aka-live491.delivery.roku.com/a3ed0622-94e5-44eb-9b2e-a05cab802563/t2-origin/out/v1/live.m3u8,Animated,,English,,Kids,"animated,cartoons,classic"
+Pitufo TV,https://aka-live491.delivery.roku.com/678e69d7-6f34-49c1-b01c-e8173db323a6/t2-origin/out/v1/live.m3u8,Animated,,English,,Kids,"animated,cartoons"
+RetroCrush,https://aka-live491.delivery.roku.com/4cae13de-8f08-4c78-814a-64cc24ae038a/t2-origin/out/v1/live.m3u8,Animated,,English,,Kids,"anime,animated,retro"
+Sonic The Hedgehog,https://aka-live491.delivery.roku.com/e4e2a5ba-9578-466a-ad3c-0c53e75f523f/t2-origin/out/v1/live.m3u8,Animated,,English,,Kids,"animated,cartoons,gaming"
+Super Mario Brothers,https://aka-live491.delivery.roku.com/4c394a43-2ae4-493b-acce-7dd7700495ef/t2-origin/out/v1/live.m3u8,Animated,,English,,Kids,"animated,cartoons,gaming"
+Yu-Gi-Oh!,https://aka-live491.delivery.roku.com/0058c472-a55b-4c80-8f55-348fe189fcfb/t2-origin/out/v1/live.m3u8,Animated,,English,,Kids,"anime,animated,gaming"
+Crunchyroll,https://aka-live491.delivery.roku.com/cdd53068-81e9-4898-999d-7f4f6d0b28ad/t2-origin/out/v1/live.m3u8,Anime,,English,,Kids,anime
+Cirque du Soleil,https://aka-live491.delivery.roku.com/c3bf478a-4019-4871-bb12-76bb59eaff62/t2-origin/out/v1/live.m3u8,Art,,English,,Culture,"arts,entertainment"
+The Bob Ross Channel,https://aka-live491.delivery.roku.com/1ede7a2e-3bdb-4abf-8fda-db572772aae4/t2-origin/out/v1/live.m3u8,Art,,English,,Culture,"arts,painting"
+Classic Car Auctions by History,https://aka-live491.delivery.roku.com/9a0b9b74-ddc7-4118-ad8c-160df46d78d7/t2-origin/out/v1/live.m3u8,Auction,,English,,Lifestyle,"auction,cars"
+Mecum TV,https://aka-live491.delivery.roku.com/dff711bc-de45-4dcd-b227-83a9661962b7/t2-origin/out/v1/live.m3u8,Auction,,English,,Lifestyle,"auction,cars"
+PBS Antiques Roadshow,https://aka-live491.delivery.roku.com/433f306b-f414-4eaf-978e-509814b70a63/t2-origin/out/v1/live.m3u8,Auction,USA,English,,Lifestyle,"auction,antiques"
+Storage Wars by A&E,https://aka-live491.delivery.roku.com/faabf0d8-4315-4386-bf21-c778c681083d/t2-origin/out/v1/live.m3u8,Auction,,English,,Lifestyle,"auction,reality"
+Highway Thru Hell,https://aka-live491.delivery.roku.com/6b9301ca-6c0a-4c4c-a4b4-807959440ceb/t2-origin/out/v1/live.m3u8,Auto,,English,,Entertainment,"cars,trucks"
+Monster Jam,https://aka-live491.delivery.roku.com/141203c9-b556-44a7-8dce-805ba9e6ec01/t2-origin/out/v1/live.m3u8,Auto,,English,,Entertainment,"cars,monster trucks"
+NASCAR,https://aka-live491.delivery.roku.com/ce85c6d3-ab73-4bf7-bbd2-2599e5ac4261/t2-origin/out/v1/live.m3u8,Auto,USA,English,,Sports,"cars,racing"
+POWERNATION,https://aka-live491.delivery.roku.com/66d4ac70-30d5-4f45-9e40-d4e1eda81dba/t2-origin/out/v1/live.m3u8,Auto,,English,,Entertainment,"cars,automotive"
+POWERNATION en Español,https://aka-live491.delivery.roku.com/26bc7b84-43bc-49f9-b180-e7427525cbaa/t2-origin/out/v1/live.m3u8,Auto,,Spanish,,Entertainment,"cars,automotive"
+RACER Select,https://aka-live491.delivery.roku.com/ea0433ef-d570-41e9-9d71-4bbc206042e4/t2-origin/out/v1/live.m3u8,Auto,,English,,Sports,"cars,racing"
+Speed Sport 1,https://aka-live491.delivery.roku.com/63e7c506-7574-46d4-a388-2453864eae36/t2-origin/out/v1/live.m3u8,Auto,,English,,Sports,"cars,racing"
+InTrouble,https://amg00861-amg00861c6-rlaxx-uk-3951.playouts.now.amagi.tv/playlist.m3u8,Action Sports,UK,English,1080p,Sports,"sports,action,outdoor"
+NESN Nation,https://aka-live491.delivery.roku.com/201b95b7-c424-413b-bdb7-850959e16240/t2-origin/out/v1/live.m3u8,Baseball,,English,,Sports,"baseball,sports"
+Ryz Sports Network,https://aka-live491.delivery.roku.com/b519e4dd-1677-44b6-81ac-c7be7018d913/t2-origin/out/v1/live.m3u8,Baseball,,English,,Sports,"baseball,sports"
+Swerve Sports,https://aka-live491.delivery.roku.com/e336313c-5db7-455c-b8de-a5bc1f93447e/t2-origin/out/v1/live.m3u8,Baseball,,English,,Sports,"baseball,sports"
+ACC Digital Network,https://aka-live491.delivery.roku.com/c1f1867d-38e5-456d-81de-5aa22554341c/t2-origin/out/v1/live.m3u8,Basketball,USA,English,,Sports,"basketball,sports"
+Big 12 Studios,https://aka-live491.delivery.roku.com/8379c9d6-9ae6-4803-a1ca-76587d69213f/t2-origin/out/v1/live.m3u8,Basketball,,English,,Sports,"basketball,sports"
+Billiard TV,https://aka-live491.delivery.roku.com/7bdb9bb8-6f3b-42c3-9ea7-44ec93c849cd/t2-origin/out/v1/live.m3u8,Billiards,,English,,Sports,"billiards,sports"
+In Depth with Graham Bensinger,https://aka-live491.delivery.roku.com/c08f5a0e-665f-4a29-ac93-fbb45dd88166/t2-origin/out/v1/live.m3u8,Biography,,English,,Documentary,"biography,interview"
+PFL MMA,https://aka-live491.delivery.roku.com/120da388-708f-4b8f-b4f4-8d564c348eb1/t2-origin/out/v1/live.m3u8,Boxing,,English,,Sports,"boxing,mma"
+Swerve Combat,https://aka-live491.delivery.roku.com/8e42098f-4bbb-4f94-8d79-012257e5a107/t2-origin/out/v1/live.m3u8,Boxing,,English,,Sports,"boxing,mma"
+Top Rank Classics,https://aka-live491.delivery.roku.com/d60c9b4b-2756-4dea-adfc-e9ec609b8cce/t2-origin/out/v1/live.m3u8,Boxing,,English,,Sports,"boxing,classic"
+PBR: Ride Pass,https://aka-live491.delivery.roku.com/6e3c080c-c614-41fb-a62c-903dfc196e6b/t2-origin/out/v1/live.m3u8,Bullfighting,,English,,Sports,"bull riding,rodeo"
+Gary Vee TV,https://aka-live491.delivery.roku.com/f6401ede-ed46-46f0-bb1d-4857c3ad8dbf/t2-origin/out/v1/live.m3u8,Business/Financial,,English,,General,"business,entrepreneurship"
+Super Simple Songs,https://aka-live491.delivery.roku.com/d29e908e-3f20-4744-b1b5-dca8f9605cc2/t2-origin/out/v1/live.m3u8,Children's Music,,English,,Kids,"kids,music,educational"
+Always Funny Videos,https://aka-live491.delivery.roku.com/b1beefe1-d4e3-43c6-b15c-7c24f0044827/t2-origin/out/v1/live.m3u8,Comedy,,English,,Entertainment,comedy
+Canela.TV Clásicos,https://aka-live491.delivery.roku.com/8fb6d023-6a9e-489e-b837-82949dabf4f3/t2-origin/out/v1/live.m3u8,Comedy,,Spanish,,Entertainment,comedy
+Comedy Dynamics,https://aka-live491.delivery.roku.com/36adb737-0d44-4942-976a-4b940ac3ae3f/t2-origin/out/v1/live.m3u8,Comedy,,English,,Entertainment,comedy
+Degrassi,https://aka-live491.delivery.roku.com/ee1621cf-a783-4004-98ba-96319b0b286b/t2-origin/out/v1/live.m3u8,Comedy,,English,,Entertainment,comedy
+Ebony,https://aka-live491.delivery.roku.com/78966fe5-f419-4a3c-93f1-95707fa52361/t2-origin/out/v1/live.m3u8,Comedy,,English,,Entertainment,comedy
+FailArmy,https://aka-live491.delivery.roku.com/acc6197f-e3ba-446c-a829-dba5e8f5bbae/t2-origin/out/v1/live.m3u8,Comedy,,English,,Entertainment,comedy
+Just for Laughs Gags,https://aka-live491.delivery.roku.com/fac576ef-0c1d-4675-91cc-47b2badfae40/t2-origin/out/v1/live.m3u8,Comedy,,English,,Entertainment,comedy
+Lifetime Love & Drama,https://aka-live491.delivery.roku.com/b9e738a4-adec-40c0-9d97-e6597bcdea24/t2-origin/out/v1/live.m3u8,Comedy,,English,,Entertainment,comedy
+LOL Network,https://aka-live491.delivery.roku.com/9f08863f-60d1-49e5-b935-871f694ba446/t2-origin/out/v1/live.m3u8,Comedy,,English,,Entertainment,comedy
+MST3K,https://aka-live491.delivery.roku.com/258146b5-3d5f-43a6-af34-eb5199da3088/t2-origin/out/v1/live.m3u8,Comedy,,English,,Entertainment,comedy
+Mythical 24/7,https://aka-live491.delivery.roku.com/305cbc9b-6c11-40b9-83ec-694da4a6b0e1/t2-origin/out/v1/live.m3u8,Comedy,,English,,Entertainment,comedy
+The Red Green Channel,https://aka-live491.delivery.roku.com/0f30972e-a469-42ff-a8aa-c70e23af5881/t2-origin/out/v1/live.m3u8,Comedy,,English,,Entertainment,comedy
+ViX Cine Club,https://aka-live491.delivery.roku.com/0f232fec-f2cc-45e0-8876-af34537103d4/t2-origin/out/v1/live.m3u8,Comedy,,Spanish,,Entertainment,comedy
+Gravitas Movies,https://aka-live491.delivery.roku.com/31aec68c-0544-4b96-9ffb-c47ca025a74a/t2-origin/out/v1/live.m3u8,Comedy Drama,,English,,Entertainment,"comedy,drama"
+My Time Movie Network,https://aka-live491.delivery.roku.com/f776bdec-ebce-432b-847d-c7c2400d82e0/t2-origin/out/v1/live.m3u8,Comedy Drama,,English,,Entertainment,"comedy,drama"
+Oro TV,https://aka-live491.delivery.roku.com/ace633bf-5514-41b7-819c-3f26c80da14d/t2-origin/out/v1/live.m3u8,Comedy Drama,,Spanish,,Entertainment,"comedy,drama"
+USA Network East,https://tvpass.org/live/USANetworkEast/hd,Entertainment,USA,English,1080p,Entertainment,"comedy,movies,series,sports"
+Team Liquid,https://aka-live491.delivery.roku.com/e2a5c1ed-5539-4f99-be9f-daf69b77e579/t2-origin/out/v1/live.m3u8,Computers,,English,,Technology,"esports,gaming,tech"
+America's Test Kitchen,https://aka-live491.delivery.roku.com/7826c27f-e65e-40d3-89cc-a62e13a407c8/t2-origin/out/v1/live.m3u8,Cooking,,English,,Lifestyle,"cooking,food"
+Bon Appetit,https://aka-live491.delivery.roku.com/52ab0fc7-211a-41f5-b78f-d9556eb36bcd/t2-origin/out/v1/live.m3u8,Cooking,,English,,Lifestyle,"cooking,food"
+FilmRise Food,https://aka-live491.delivery.roku.com/f6f9008a-207c-4f52-bbb3-92d6cf5df0f9/t2-origin/out/v1/live.m3u8,Cooking,,English,,Lifestyle,"cooking,food"
